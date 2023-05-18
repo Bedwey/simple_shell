@@ -13,4 +13,12 @@
 
 int _execute(char *buff, char *argv[], char *env[]);
 
+/* String Manager */
+bool char_finder(char c, char *array);
+int words_count(char *str, char *separators, unsigned int *p_array);
+char **split_string(char *str, char *separators, size_t *word_count);
+
+/* Memmory Manager */
+void init_int_array(unsigned int *p_array, size_t size);
+
 #endif

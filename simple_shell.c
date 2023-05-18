@@ -8,13 +8,17 @@
  * @env: An array of user enviroment.
  *
  * Return: error code if there is one.
- *	else The exit value of the last executed command.
- */
+ *      else The exit value of the last executed command.
+*/
 
 int _execute(char *buff, char *argv[], char *env[])
 {
 	pid_t wpid;
 	int status;
+	size_t argc = 0;
+	char **comands;
+
+	comands = split_string(buff, " ", &argc);
 
 	wpid = fork();
 	if (wpid == -1)
@@ -25,7 +29,7 @@ int _execute(char *buff, char *argv[], char *env[])
 
 	if (wpid == 0)
 	{
-		return (execve(buff, argv, env));
+		return (execve(comands[0], comands, env));
 	}
 	else
 	{
@@ -42,7 +46,7 @@ int _execute(char *buff, char *argv[], char *env[])
  * @env:  An array of user enviroment.
  *
  * Return: 0 on success or 1 on failure.
- */
+*/
 
 int main(__attribute__((unused)) int argc, char *argv[], char **env)
 {
