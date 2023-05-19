@@ -47,3 +47,28 @@ char *_concat(int count, ...)
 	va_end(ap);
 	return (ret);
 }
+
+/**
+ * _strncmp - This program compares the first n characters
+ *                        of two strings.
+ *
+ * @s1: First string to be compared.
+ * @s2: Second string to be compated.
+ * @n: Number of characters to compare.
+ *
+ * Return: negative, positive or zero integer.
+ */
+
+int _strncmp(char *s1, char *s2, int n)
+{
+	int u, diff;
+
+	for (u = 0; u < n; u++)
+	{
+		diff = s1[u] - s2[u];
+		if (diff > 0 || diff < 0)
+			return (diff);
+	}
+
+	return (0);
+}

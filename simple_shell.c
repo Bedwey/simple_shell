@@ -1,6 +1,21 @@
 #include "shell.h"
 
 /**
+ * handle_builtin - handle builtin function.
+ *
+ * @args: user input arguments.
+ * @count: count of args.
+ *
+ * Return: nothing.
+*/
+
+void handle_builtin(char **args, size_t count)
+{
+	if (_strncmp(args[0], "exit", 4) == 0)
+		handle_exit(args, count);
+}
+
+/**
  * _file_finder - search for file.
  *
  * @args: user input arguments.
@@ -8,7 +23,7 @@
  * @args_count: count of args.
  *
  * Return: true if found file else false.
- */
+*/
 
 bool _file_finder(char *args[], struct stat statbuf, int args_count)
 {
@@ -42,7 +57,7 @@ bool _file_finder(char *args[], struct stat statbuf, int args_count)
  *
  * Return: error code if there is one.
  *      else The exit value of the last executed command.
- */
+*/
 
 int _execute(char *args[], char *envp[])
 {
@@ -75,7 +90,7 @@ int _execute(char *args[], char *envp[])
  * @envp:  An array of user enviroment.
  *
  * Return: 0 on success or 1 on failure.
- */
+*/
 
 int main(__attribute__((unused)) int argc, char *argv[], char **envp)
 {
@@ -102,6 +117,7 @@ int main(__attribute__((unused)) int argc, char *argv[], char **envp)
 		if (buff[bytes - 1] == '\n')
 			buff[bytes - 1] = '\0';
 		args = split_string(buff, " ", &args_count);
+		handle_builtin(args, args_count);
 		if (!_file_finder(args, statbuf, args_count))
 			continue;
 
