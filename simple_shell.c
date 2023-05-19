@@ -1,21 +1,6 @@
 #include "shell.h"
 
 /**
- * handle_builtin - handle builtin function.
- *
- * @args: user input arguments.
- * @count: count of args.
- *
- * Return: nothing.
-*/
-
-void handle_builtin(char **args, size_t count)
-{
-	if (_strncmp(args[0], "exit", 4) == 0)
-		handle_exit(args, count);
-}
-
-/**
  * _file_finder - search for file.
  *
  * @args: user input arguments.
@@ -117,7 +102,8 @@ int main(__attribute__((unused)) int argc, char *argv[], char **envp)
 		if (buff[bytes - 1] == '\n')
 			buff[bytes - 1] = '\0';
 		args = split_string(buff, " ", &args_count);
-		handle_builtin(args, args_count);
+		if (handle_builtin(args, args_count))
+			continue;
 		if (!_file_finder(args, statbuf, args_count))
 			continue;
 

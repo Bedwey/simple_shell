@@ -13,7 +13,6 @@
 
 extern char **environ;
 
-void handle_builtin(char **args, size_t count);
 bool _file_finder(char *args[], struct stat statbuf, int args_count);
 int _execute(char *args[], char *envp[]);
 
@@ -26,6 +25,8 @@ char **split_string(char *str, char *separators, size_t *word_count);
 /* String Manager 2 */
 char *_concat(int count, ...);
 int _strncmp(char *s1, char *s2, int n);
+int _putchar(char c);
+void _puts(char *str);
 
 /* Memmory Manager */
 void init_int_array(unsigned int *p_array, size_t size);
@@ -40,6 +41,7 @@ char *_file_path(char *filename, struct stat *statbuf);
 
 /* Custom Handler */
 void handle_exit(char **exit_args, size_t count);
+bool handle_builtin(char **args, size_t count);
 
 /* Converter */
 int _atoi(char *s);
