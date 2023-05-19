@@ -1,6 +1,28 @@
 #include "shell.h"
 
 /**
+ * _strlen - takes a pointer to an char parameter
+ *               and return length
+ *
+ * @s: char parameter
+ *
+ * Return: length
+ */
+
+int _strlen(char *s)
+{
+	int length = 0;
+
+	while (*s != '\0')
+	{
+		length++;
+		s++;
+	}
+
+	return (length);
+}
+
+/**
  * char_finder - checks if a character is on array.
  *
  * @c: Character to be checked.
@@ -100,27 +122,28 @@ char **split_string(char *str, char *separators, size_t *word_count)
 
 	if (words_len == 0)
 		return (NULL);
+
 	words = malloc((sizeof(char *) * words_len) + 1);
 	if (!words)
 		return (NULL);
 	for (split_index = 0; split_index < words_len; split_index++)
 	{
 		words[split_index] = malloc((sizeof(char) * word_sizes[split_index]) + 1);
-	if (!words[split_index])
-	{
-	for (split_index--; split_index >= 0; split_index--)
-		free(words[split_index]);
-	free(words);
-	return (NULL);
-	}
-	for (c = 0; c < word_sizes[split_index]; c++, copier++)
-	{
-		while (char_finder(*copier, separators))
-			copier++;
+		if (!words[split_index])
+		{
+			for (split_index--; split_index >= 0; split_index--)
+				free(words[split_index]);
+			free(words);
+			return (NULL);
+		}
+		for (c = 0; c < word_sizes[split_index]; c++, copier++)
+		{
+			while (char_finder(*copier, separators))
+				copier++;
 
-		words[split_index][c] = *copier;
-	};
-	words[split_index][c] = '\0';
+			words[split_index][c] = *copier;
+		};
+		words[split_index][c] = '\0';
 	}
 	*word_count = words_len;
 	words[split_index] = NULL;
