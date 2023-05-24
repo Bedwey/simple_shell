@@ -79,33 +79,33 @@ int _execute(char *args[], char *envp[])
 
 int main(__attribute__((unused)) int argc, char *argv[], char **envp)
 {
-	char *buff = NULL, *prompt = "$ ";
-	char **args;
+	char *prompt = "$ ";
 	size_t bytes;
 	size_t args_count, buff_size = 0;
 	char *app_name = argv[0];
 	int statue = 1;
-
+	char *input, **cmd;
 	while (statue)
 	{
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, prompt, 2);
-		bytes = getline(&buff, &buff_size, stdin);
+		bytes = getline(&input, &buff_size, stdin);
 		if ((int)bytes == -1)
 		{
 			perror(app_name);
-			free(buff);
+			free(input);
 			exit(EXIT_FAILURE);
 		}
-		if (buff[bytes - 1] == '\n')
-			buff[bytes - 1] = '\0';
-		args = split_string(buff, " ", &args_count);
-
-		if (_execute(args, envp) == -1)
+		if (input[bytes - 1] == '\n')
+			input[bytes - 1] = '\0';
+		cmd = split_string(input, " ", &args_count);
+		if (cmd[0] == NULL)
+			continue;
+		if (_execute(cmd, envp) == -1)
 			perror(app_name);
-		free_string_array(args, args_count);
+		free_string_array(cmd, args_count);
 	}
 
-	free(buff);
+	free(input);
 	return (statue);
 }
