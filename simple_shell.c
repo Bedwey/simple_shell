@@ -1,111 +1,126 @@
 #include "shell.h"
 
 /**
- * _file_finder - search for file.
+ * execute_path_command - executes a command given by the user.
  *
- * @args: user input arguments.
- * @statbuf: stat of file.
- * @args_count: count of args.
+ * @argv: a pointer to a create_cmd struct as an argument.
  *
- * Return: true if found file else false.
+ * @n: number to indicate processes created by the shell or
+ *
+ * it indicates how many commands executed.
+ *
+ * @av: The name of the executable file.
+ *
+ * Return: nothing
 */
 
-bool _file_finder(char *args[], struct stat statbuf, int args_count)
+void execute_path_command(create_cmd *argv, int n, char *av)
 {
-	char *fullpath = NULL;
+	pid_t child;
+	char *command = NULL;
+	int status;
 
-	if (!_file_status(args[0], &statbuf))
+	command = _cmd_abs_path(argv->command);
+
+	if (command != NULL)
 	{
-		fullpath = _file_path(args[0], &statbuf);
-		if (!fullpath)
+		if (argv->command != command)
 		{
-			perror("Error (_file_path)");
-			free_string_array(args, args_count);
-			return (false);
+			free(argv->command);
+			argv->command = command;
+			argv->argument[0] = command;
+		}
+
+		child = fork();
+
+		if (child == 0)
+		{
+
+			if (execve(argv->command, argv->argument, environ) == -1)
+			{
+				perror("Error");
+				exit(EXIT_FAILURE);
+			}
 		}
 		else
 		{
-			free(args[0]);
-			args[0] = fullpath;
+			waitpid(child, &status, 0);
 		}
-	}
-
-	return (true);
-}
-
-
-/**
- * _execute - Executes a command in a child process.
- *
- * @args: buffer pointer.
- * @envp: An array of user enviroment.
- *
- * Return: error code if there is one.
- *      else The exit value of the last executed command.
-*/
-
-int _execute(char *args[], char *envp[])
-{
-	pid_t wpid;
-	int status;
-
-	wpid = fork();
-	if (wpid == -1)
-	{
-		perror("Error > pid");
-		exit(EXIT_FAILURE);
-	}
-
-	if (wpid == 0)
-	{
-		return (execve(args[0], args, envp));
 	}
 	else
 	{
-		waitpid(wpid, &status, 0);
+		printf("%s: %d: %s: not found\n", av, n, argv->command);
 	}
-	return (status);
 }
 
 /**
- * main - Entry point to shell program
+ * execution_call - calls for the execution of a command.
  *
- * @argc: Number of arguments passed into the shell executable.
- * @argv: Vector containing arguments passed.
- * @envp:  An array of user enviroment.
+ * @av: pointer to the name of the executable shell file.
  *
- * Return: 0 on success or 1 on failure.
-*/
+ * Return: nothing.
+ */
 
-int main(__attribute__((unused)) int argc, char *argv[], char **envp)
+void execution_call(char *av)
 {
-	char *prompt = "$ ";
-	size_t bytes;
-	size_t args_count, buff_size = 0;
-	char *app_name = argv[0];
-	int statue = 1;
-	char *input, **cmd;
-	while (statue)
+	char *delim = " ";
+	char ptr_line[1024];
+	create_cmd *argv = NULL;
+	void (*built_in_func)(char *);
+	int n_byte;
+	static int process_count;
+
+	n_byte = _readline(ptr_line);
+	if (n_byte == -1)
 	{
-		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, prompt, 2);
-		bytes = getline(&input, &buff_size, stdin);
-		if ((int)bytes == -1)
-		{
-			perror(app_name);
-			free(input);
-			exit(EXIT_FAILURE);
-		}
-		if (input[bytes - 1] == '\n')
-			input[bytes - 1] = '\0';
-		cmd = split_string(input, " ", &args_count);
-		if (cmd[0] == NULL)
-			continue;
-		if (_execute(cmd, envp) == -1)
-			perror(app_name);
-		free_string_array(cmd, args_count);
+		exit(0);
 	}
 
-	free(input);
-	return (statue);
+	if (n_byte > 0)
+	{
+		parse_cmd(&argv, ptr_line, delim);
+
+		built_in_func = func_ptr(argv->command);
+
+		process_count++;
+		if (built_in_func != NULL)
+		{
+			built_in_func(argv->argument[1]);
+			free_node(&argv);
+		}
+		else
+		{
+			execute_path_command(argv, process_count, av);
+			free_node(&argv);
+		}
+	}
+}
+
+/**
+ * main - The shell's entry point and waits for user input.
+ *
+ * @ac: argument count(unused)
+ *
+ * @av: array of commandline arguments.
+ *
+ * Return: exit with success signal unless interrupted.
+ */
+
+int main(int ac __attribute__((unused)), char **av)
+{
+	if (isatty(STDIN_FILENO))
+	{
+		do {
+			signal(SIGINT, _ctrlC);
+			prompt();
+			execution_call(av[0]);
+		} while (1);
+	}
+	else
+	{
+		do {
+			execution_call(av[0]);
+		} while (1);
+	}
+	exit(EXIT_SUCCESS);
 }

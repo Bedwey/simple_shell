@@ -1,33 +1,51 @@
 #include "shell.h"
 
 /**
- * _getenv - get enviromint varibles by key.
+ * env - displays the shell environment.
  *
- * @key: to search for;
+ * @en: unused.
  *
- * Return: eniroment char array of eniroment paths.
+ * Return: nothing
 */
 
-char *_getenv(char *key)
+void env(char *en __attribute__((unused)))
 {
-	size_t nameLen = _strlen(key), env_var_len, i;
-	char **env = environ, *env_var;
+	int i = 0;
 
-	for (; *env != NULL; ++env)
+	while (environ[i] != NULL)
 	{
-		env_var = *env;
-		env_var_len = _strlen(env_var);
-		if (nameLen <= env_var_len)
-		{
-			for (i = 0; i < nameLen; ++i)
-			{
-				if (key[i] != env_var[i])
-					break;
-			}
-
-			if (i == nameLen && env_var[i] == '=')
-				return (&env_var[i + 1]);
-		}
+		_puts(environ[i]);
+		i++;
 	}
+}
+
+
+/**
+ * _getenv - function fetches requested enviroment variable
+ *
+ * @varname: the path for the enviroment variable needed
+ *
+ * Return: the path if successful or NULL if fail
+ *
+*/
+
+char *_getenv(char *varname)
+{
+	size_t len = _strlen(varname), i = 0;
+
+	if (varname == NULL || *varname == '\0')
+	{
+		return (NULL);
+	}
+
+	while (environ[i] != NULL)
+	{
+		if (_strncmp(varname, environ[i], len) == 0 && environ[i][len] == '=')
+		{
+			return (&environ[i][len + 1]);
+		}
+		i++;
+	}
+
 	return (NULL);
 }

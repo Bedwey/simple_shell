@@ -1,152 +1,148 @@
 #include "shell.h"
 
 /**
- * _strlen - takes a pointer to an char parameter
- *               and return length
+ * _strlen - calculates the string length.
  *
- * @s: char parameter
+ * @string: the string.
  *
- * Return: length
- */
+ * Return: number bytes or character in the string
+ *
+*/
 
-int _strlen(char *s)
+int _strlen(char *string)
 {
-	int length = 0;
+	int i = 0;
 
-	while (*s != '\0')
+	while (string[i] != '\0')
 	{
-		length++;
-		s++;
+		i++;
 	}
-
-	return (length);
+	return (i);
 }
 
 /**
- * char_finder - checks if a character is on array.
+ * _strcmp - compares two strings
  *
- * @c: Character to be checked.
- * @array: String of charaters to be compated.
+ * @str1: first string to compare
  *
- * Return: True if it is on it, else false.
+ * @str2: second string to compare with
+ *
+ * Return: 0 on success or any other number on failure.
+ *
 */
 
-bool char_finder(char c, char *array)
+int _strcmp(char *str1, char *str2)
 {
-	int s;
+	int i = 0;
 
-	for (s = 0; array[s]; s++)
+	while (str1[i] == str2[i] && str1[i] != '\0')
 	{
-		if (c == array[s])
-			return (true);
+		i++;
 	}
-	return (false);
+
+	if (str1[i] == str2[i])
+	{
+		return (str1[i] - str2[i]);
+	}
+	else
+	{
+		return (str1[i] - str2[i]);
+	}
 }
 
 /**
- * words_count - counts the number of words in a string specified by
- * one or more seprator. It also counts the length of
- * each word and stores them in an array.
+ * _strncmp - compares specified number of bytes in two strings.
  *
- * @str: String to be parsed.
- * @separators: One or more delimiters to separate the string by.
- * @p_array: Pointer to array where the word lengths will be stored.
+ * @str1: first string.
  *
- * Return: Number of words.
+ * @str2: second string.
+ *
+ * @n: number of bytes to compare.
+ *
+ * Return: 0 on success or random number on failure.
 */
 
-int words_count(char *str, char *separators, unsigned int *p_array)
+int _strncmp(const char *str1, const char *str2, int n)
 {
-	unsigned int copy_index, sep_index, length = 1;
-	unsigned int counter = 0;
-	char *copier = str;
-	bool start = false, is_separator;
+	int i = 0;
 
-	if (!str)
+	while (i < n && str1[i] != '\0' && str2[i] != '\0')
+	{
+		if (str1[i] != str2[i])
+		{
+			return (str1[i] - str2[i]);
+		}
+		i++;
+	}
+
+	if (i == n)
+	{
 		return (0);
-	while (!start)
-		for (sep_index = 0; separators[sep_index]; sep_index++)
-		{
-			if (*copier == separators[sep_index])
-				copier++;
-			else
-				start = true;
-		}
-	if (!*(copier + 1))
-	{
-		p_array[0] = 1;
-		return (1);
 	}
-	for (copy_index = 1; copier[copy_index]; copy_index++)
+	else
 	{
-		is_separator = char_finder(copier[copy_index], separators);
-
-		if (is_separator && !(char_finder(copier[copy_index - 1], separators)))
-		{
-			p_array[counter] = length;
-			counter++;
-		}
-		if ((!copier[copy_index + 1]) && !is_separator)
-		{
-			length++;
-			p_array[counter] = length;
-			counter++;
-			break;
-		}
-		length = (is_separator) ? 0 : (length + 1);
+		return (str1[i] - str2[i]);
 	}
-	return (counter);
 }
 
 /**
- * split_string - counts the number of words in a string specified by
- * one or more delimiter. It also counts the length of
- * each word and stores them in an array.
+ * _strcat - appends a string at the end of another string.
  *
- * @str: String to be parsed.
- * @separators: One or more delimiters to separate the string by.
- * @word_count: Pointer to array where the word lengths will be stored.
+ * @dest: The string to append to.
  *
- * Return: Number of words.
+ * @src: source string to be appended.
+ *
+ * Return: pointer to resulting string dest.
 */
 
-char **split_string(char *str, char *separators, size_t *word_count)
+char *_strcat(char *dest, char *src)
 {
-	int split_index, words_len;
-	char **words;
-	char *copier = str;
-	unsigned int c, word_sizes[100];
+	int len = strlen(dest), i = 0;
 
-	init_int_array(word_sizes, 100);
-	words_len = words_count(str, separators, word_sizes);
-
-	if (words_len == 0)
-		return (NULL);
-
-	words = malloc((sizeof(char *) * words_len) + 1);
-	if (!words)
-		return (NULL);
-	for (split_index = 0; split_index < words_len; split_index++)
+	while (src[i] != '\0')
 	{
-		words[split_index] = malloc((sizeof(char) * word_sizes[split_index]) + 1);
-		if (!words[split_index])
-		{
-			for (split_index--; split_index >= 0; split_index--)
-				free(words[split_index]);
-			free(words);
-			return (NULL);
-		}
-		for (c = 0; c < word_sizes[split_index]; c++, copier++)
-		{
-			while (char_finder(*copier, separators))
-				copier++;
-
-			words[split_index][c] = *copier;
-		};
-		words[split_index][c] = '\0';
+		dest[len] = src[i];
+		len++;
+		i++;
 	}
-	*word_count = words_len;
-	words[split_index] = NULL;
+	dest[len] = '\0';
 
-	return (words);
+	return (dest);
 }
+
+/**
+ * _strdup - duplicates a string.
+ *
+ * @str: string to duplicate.
+ *
+ * Return: pointer to the duplicate string.
+*/
+
+char *_strdup(char *str)
+{
+	char *dest;
+	int len = 0, i = 0;
+
+	if (str == NULL)
+	{
+		return (NULL);
+	}
+
+	len = _strlen(str);
+	dest = (char *)malloc(sizeof(char) * (len + 1));
+
+	if (dest == NULL)
+	{
+		return (NULL);
+	}
+
+	while (str[i] != '\0')
+	{
+		dest[i] = str[i];
+		i++;
+	}
+	dest[i] = '\0';
+
+	return (dest);
+}
+

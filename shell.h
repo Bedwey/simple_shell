@@ -2,48 +2,86 @@
 #define SHELL_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
 #include <unistd.h>
-#include <stdarg.h>
-#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <fcntl.h>
 
 extern char **environ;
 
-bool _file_finder(char *args[], struct stat statbuf, int args_count);
-int _execute(char *args[], char *envp[]);
+/**
+ * struct command - structure for built_in commands
+ *
+ * @cmdname: Command name to be called.
+ *
+ * @function: function performing the command task
+ *
+ * Description: The structure contains the name of a function
+ * to be called and a function pointer to the function to be called.
+ */
 
-/* String Manager */
-int _strlen(char *s);
-bool char_finder(char c, char *array);
-int words_count(char *str, char *separators, unsigned int *p_array);
-char **split_string(char *str, char *separators, size_t *word_count);
+typedef struct command
+{
+	char *cmdname;
+	void (*function)(char *arg);
+} built_in;
 
-/* String Manager 2 */
-char *_concat(int count, ...);
-int _strncmp(char *s1, char *s2, int n);
+/**
+ * struct command_s - the structure store a commmand and arguments
+ *
+ * @command: command name or simply a command.
+ *
+ * @argument: Array of arguments of the command.
+ *
+ * @next: pointer to the next node.
+ *
+ * Description: Every command and the arguments are craeted as a node
+ * at each command call.
+ */
+
+typedef struct command_s
+{
+	char *command;
+	char **argument;
+	struct command_s *next;
+} create_cmd;
+
+void prompt(void);
+char *_getenv(char *varname);
+int _readline(char *line);
+char *_memset(char *s, char value, unsigned int num);
+int remove_reading_space(char **buffer, char *line);
+void (*func_ptr(char *str))(char *);
+char *break_input_line(char *line, char *seperator);
+char *_cmd_abs_path(char *cmdname);
+void clean_token(char **tk_copy, char **token);
+void process_args(char **command, char ***args, char *line_ptr, char *delim);
+create_cmd *parse_cmd(create_cmd **head, char *line_ptr, char *delim);
+void free_node(create_cmd **argv);
+char *_strstr(char *mainstr, char *substr);
+
+void execution_call(char *av);
+void execute_path_command(create_cmd *argv, int n, char *av);
+
+void _ctrlC(int sig __attribute__((unused)));
+void _exit_process(char *status __attribute__((unused)));
+void env(char *en __attribute__((unused)));
+
+int _strlen(char *string);
+int _strcmp(char *str1, char *str2);
+int _strncmp(const char *str1, const char *str2, int n);
+char *_strcat(char *dest, char *src);
+char *_strdup(char *str);
+char *_strncpy(char *dest, char *src, int n);
+char *_strstr(char *mainstr, char *substr);
+char *_strcpy(char *destination, char *source);
+int _atoi(char *string);
 int _putchar(char c);
 void _puts(char *str);
-
-/* Memmory Manager */
-void init_int_array(unsigned int *p_array, size_t size);
-void free_string_array(char **array, int len);
-
-/* Environment Manager */
-char *_getenv(char *key);
-
-/* File Checker */
-bool _file_status(char *pathname, struct stat *statbuf);
-char *_file_path(char *filename, struct stat *statbuf);
-
-/* Custom Handler */
-void handle_exit(char **exit_args, size_t count);
-bool handle_builtin(char **args, size_t count);
-
-/* Converter */
-int _atoi(char *s);
 
 #endif

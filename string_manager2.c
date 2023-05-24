@@ -1,104 +1,130 @@
 #include "shell.h"
 
 /**
- * _concat - concat strings.
+ * _strncpy - copies n bytes of string src to dest.
  *
- * @count: count of inputs.
+ * @dest: pointer to string destination.
  *
- * Return: address of char array of concated strings.
- */
+ * @src: pointer to string source.
+ *
+ * @n: number of bytes to copy from src to dest.
+ *
+ * Return: pointer to the destination string.
+*/
 
-char *_concat(int count, ...)
+char *_strncpy(char *dest, char *src, int n)
 {
-	va_list ap;
-	size_t len = 0;
-	int index;
-	char *ret, *dst;
+	int j = 0;
 
-	if (count < 1)
-		return (NULL);
-	va_start(ap, count);
-	for (index = 0; index < count; index++)
+	for (j = 0; src[j] != '\0'; j++)
 	{
-		char *s = va_arg(ap, char *);
-
-		len += _strlen(s);
-	}
-
-	va_end(ap);
-
-	ret = malloc(len + 1);
-	if (ret == NULL)
-		return (NULL);
-
-	dst = ret;
-	va_start(ap, count);
-	for (index = 0; index < count; index++)
-	{
-		const char *src = va_arg(ap, char *);
-
-		while ((*dst++ = *src++))
+		if (j < n)
 		{
+			dest[j] = src[j];
 		}
-
-		dst--;
 	}
 
-	va_end(ap);
-	return (ret);
+	for (; j < n; j++)
+	{
+		dest[j] = '\0';
+	}
+
+	return (dest);
 }
 
 /**
- * _strncmp - This program compares the first n characters
- *                        of two strings.
+ * _strstr - finds the first occurrence of the substring in the main string.
  *
- * @s1: First string to be compared.
- * @s2: Second string to be compated.
- * @n: Number of characters to compare.
+ * @mainstr: pointer to the main string.
  *
- * Return: negative, positive or zero integer.
- */
+ * @substr: pointer to substring
+ *
+ * Return: a pointer to the beginning of the located substring,
+ *
+ * or NULL if the substring is not found.
+*/
 
-int _strncmp(char *s1, char *s2, int n)
+char *_strstr(char *mainstr, char *substr)
 {
-	int u, diff;
+	int i = 0, j = 0;
 
-	for (u = 0; u < n; u++)
+	if (!*substr)
 	{
-		diff = s1[u] - s2[u];
-		if (diff > 0 || diff < 0)
-			return (diff);
+		return (mainstr);
 	}
 
-	return (0);
+	while (mainstr[i])
+	{
+		while (substr[j] && mainstr[i + j] == substr[j])
+		{
+			j++;
+		}
+		if (!substr[j])
+		{
+			return (mainstr + i);
+		}
+		i++;
+		j = 0;
+	}
+	return (NULL);
+}
+
+/**
+ * _strcpy - copy a string from source to destination
+ *
+ * @destination: where the string is copied to
+ *
+ * @source: where the string is copied from
+ *
+ * Return: pointer to the destination
+ *
+*/
+
+char *_strcpy(char *destination, char *source)
+{
+
+	while (*source != '\0')
+	{
+		*destination++ = *source++;
+	}
+	*destination = '\0';
+
+	return (destination);
+}
+
+/**
+ * _puts - function prints strings and prints a new line aftre
+ *
+ * @str: pointer to strings of character
+ *
+ * Return: Void
+*/
+
+void _puts(char *str)
+{
+	char try;
+
+	do {
+		if (*str != '\0')
+		{
+			try = *str;
+			_putchar(try);
+		}
+	} while (*str++);
+	_putchar('\n');
 }
 
 /**
  * _putchar - writes the character c to stdout
+ *
  * @c: The character to print
  *
  * Return: On success 1.
+ *
  * On error, -1 is returned, and errno is set appropriately.
  */
 
 int _putchar(char c)
 {
 	return (write(1, &c, 1));
-}
-
-/**
- * _puts - prints a string, followed by a newline to stdout
- *
- * @str: string parameter to print
- *
- * Return: Nothing
-*/
-
-void _puts(char *str)
-{
-	while (*str != '\0')
-	{
-		_putchar(*str++);
-	}
-	_putchar('\n');
 }
