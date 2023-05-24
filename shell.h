@@ -83,5 +83,10 @@ char *_strcpy(char *destination, char *source);
 int _atoi(char *string);
 int _putchar(char c);
 void _puts(char *str);
+void _puts2(char *c);
+void print_error(char *input, int counter, char *argv);
+int intlen(int num);
+void array_rev(char *arr, int len);
+char *_itoa(unsigned int n);
 
 #endif

@@ -35,7 +35,6 @@ void execute_path_command(create_cmd *argv, int n, char *av)
 
 		if (child == 0)
 		{
-
 			if (execve(argv->command, argv->argument, environ) == -1)
 			{
 				perror("Error");
@@ -49,7 +48,7 @@ void execute_path_command(create_cmd *argv, int n, char *av)
 	}
 	else
 	{
-		printf("%s: %d: %s: not found\n", av, n, argv->command);
+		print_error(argv->command, n, av);
 	}
 }
 
@@ -99,27 +98,27 @@ void execution_call(char *av)
 /**
  * main - The shell's entry point and waits for user input.
  *
- * @ac: argument count(unused)
+ * @argc: argument count
  *
- * @av: array of commandline arguments.
+ * @argv: array of commandline arguments.
  *
  * Return: exit with success signal unless interrupted.
  */
 
-int main(int ac __attribute__((unused)), char **av)
+int main(int argc __attribute__((unused)), char **argv)
 {
 	if (isatty(STDIN_FILENO))
 	{
 		do {
 			signal(SIGINT, _ctrlC);
 			prompt();
-			execution_call(av[0]);
+			execution_call(argv[0]);
 		} while (1);
 	}
 	else
 	{
 		do {
-			execution_call(av[0]);
+			execution_call(argv[0]);
 		} while (1);
 	}
 	exit(EXIT_SUCCESS);
