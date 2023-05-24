@@ -83,14 +83,12 @@ int main(__attribute__((unused)) int argc, char *argv[], char **envp)
 	char **args;
 	size_t bytes;
 	size_t args_count, buff_size = 0;
-	struct stat statbuf;
-	bool from_user = false;
 	char *app_name = argv[0];
+	int statue = 1;
 
-	while (true && !from_user)
+	while (statue)
 	{
-		from_user = !isatty(STDIN_FILENO);
-		if (!from_user)
+		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, prompt, 2);
 		bytes = getline(&buff, &buff_size, stdin);
 		if ((int)bytes == -1)
@@ -102,10 +100,6 @@ int main(__attribute__((unused)) int argc, char *argv[], char **envp)
 		if (buff[bytes - 1] == '\n')
 			buff[bytes - 1] = '\0';
 		args = split_string(buff, " ", &args_count);
-		if (handle_builtin(args, args_count))
-			continue;
-		if (!_file_finder(args, statbuf, args_count))
-			continue;
 
 		if (_execute(args, envp) == -1)
 			perror(app_name);
@@ -113,5 +107,5 @@ int main(__attribute__((unused)) int argc, char *argv[], char **envp)
 	}
 
 	free(buff);
-	return (0);
+	return (statue);
 }
