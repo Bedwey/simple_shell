@@ -107,19 +107,16 @@ void execution_call(char *av)
 
 int main(int argc __attribute__((unused)), char **argv)
 {
-	if (isatty(STDIN_FILENO))
+
+	while (1)
 	{
-		do {
+		if (isatty(STDIN_FILENO))
+		{
 			signal(SIGINT, _ctrlC);
 			prompt();
-			execution_call(argv[0]);
-		} while (1);
+		}
+		execution_call(argv[0]);
 	}
-	else
-	{
-		do {
-			execution_call(argv[0]);
-		} while (1);
-	}
+
 	exit(EXIT_SUCCESS);
 }
